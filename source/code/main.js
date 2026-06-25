@@ -16,5 +16,10 @@ function catchInputChange(Steam) {
         if (!(event.key === "Enter")) return false;
         await Steam.validateSteamId(SEARCH_INPUT);
         console.log(Steam.steamId);
+
+        if (!Steam.steamId) return false;
+
+        const games = await Steam.getSteamIdOwnedGames();
+        console.log(games);
     });
 }
