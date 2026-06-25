@@ -40,9 +40,7 @@ export class Steam {
         if (_url[_url.length - 1] === "") steamId = _url[_url.length - 2];
         else steamId = _url[_url.length - 1];
 
-        const response = await fetch(
-            `http://localhost:3030/api/steamId/${steamId}`,
-        );
+        const response = await fetch(`/api/steamId/${steamId}`);
 
         const data = await response.json();
         if (data !== 42) return data;
@@ -51,9 +49,7 @@ export class Steam {
     }
 
     async getSteamIdOwnedGames() {
-        const response = await fetch(
-            `http://localhost:3030/api/steamIdOwnedGames/${this.STEAM_ID}`,
-        );
+        const response = await fetch(`/api/steamIdOwnedGames/${this.STEAM_ID}`);
 
         const data = await response.json();
         console.log(data);
