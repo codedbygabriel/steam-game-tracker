@@ -12,15 +12,9 @@ function catchInputChange(Steam) {
         'input[name="search-steam-id"]',
     );
 
-    SEARCH_INPUT.addEventListener("keydown", () => {
+    SEARCH_INPUT.addEventListener("keydown", async () => {
         if (!(event.key === "Enter")) return false;
-        const isValidSteamId = Steam.validateSteamId(SEARCH_INPUT);
-
-        if (!isValidSteamId) {
-            SEARCH_INPUT.value = "Invalid Steam ID!!!";
-            return false;
-        }
-
-        Steam.searchSteamIdProfile();
+        await Steam.validateSteamId(SEARCH_INPUT);
+        console.log(Steam.steamId);
     });
 }
