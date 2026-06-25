@@ -63,7 +63,7 @@ const app = http.createServer(async (req, res) => {
         const id = returnId(req.url);
         const GAMES = await getSteamIdOwnedGames(id);
 
-        res.end("meows meows, " + id);
+        res.end(JSON.stringify(GAMES));
     }
 });
 
@@ -83,7 +83,13 @@ async function searchSteamIdProfile(steamId) {
     return data.response.steamid;
 }
 
-async function getSteamIdOwnedGames(steamId) {}
+async function getSteamIdOwnedGames(steamId) {
+    const GAMES_URL = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${process.env.api_key}&steamid=${steamId}&include_appinfo=true&format=json`;
+    const response = await fetch(GAMES_URL);
+    const data = await response.json();
+
+    return data;
+}
 
 const returnId = (url) => {
     const steam_url = url.split("/");

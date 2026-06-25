@@ -3,6 +3,7 @@
 export class Steam {
     R_STEAM_ID = /^7656119[0-9]{10}$/;
     STEAM_ID = false;
+    GAMES = [];
 
     async validateSteamId(SEARCH_INPUT) {
         let IS_URL = false;
@@ -49,7 +50,14 @@ export class Steam {
         return false;
     }
 
-    async getSteamIdOwnedGames() {}
+    async getSteamIdOwnedGames() {
+        const response = await fetch(
+            `http://localhost:3030/api/steamIdOwnedGames/${this.STEAM_ID}`,
+        );
+
+        const data = await response.json();
+        console.log(data);
+    }
 
     get steamId() {
         return this.STEAM_ID;
