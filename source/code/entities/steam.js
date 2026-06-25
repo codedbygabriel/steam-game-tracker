@@ -2,13 +2,13 @@
 
 export class Steam {
     R_STEAM_ID = /^7656119[0-9]{10}$/;
-    STEAM_ID = null;
+    STEAM_ID = false;
 
-    validateSteamId(SEARCH_INPUT) {
+    async validateSteamId(SEARCH_INPUT) {
         let IS_URL = false;
         let IS_SteamId = false;
 
-        // TODO: Create a method to catch user ID via URL
+        // DONE: Create a method to catch user ID via URL
         if (SEARCH_INPUT.value.includes("steamcommunity.com")) IS_URL = true;
         if (this.R_STEAM_ID.test(SEARCH_INPUT.value)) IS_SteamId = true;
 
@@ -18,24 +18,40 @@ export class Steam {
             return false;
         }
 
-        if (IS_URL) console.warn(`${SEARCH_INPUT.value} is a valid Steam ID`);
+        if (IS_URL || IS_SteamId)
+            console.warn(
+                `${SEARCH_INPUT.value} is about to be converted to a Steam ID / tested.`,
+            );
 
         this.STEAM_ID = IS_URL
-            ? this.#URLToSteamId(SEARCH_INPUT.value)
+            ? await this.#URLToSteamId(SEARCH_INPUT.value)
             : SEARCH_INPUT.value;
 
+        if (this.STEAM_ID === false) return false;
         return true;
     }
 
-    #URLToSteamId(url) {
+    async #URLToSteamId(url) {
         const _url = url.split("/");
 
         // Sometimes, if the steam URl ends with "/" the algorithm may return a empty string.
-        if (_url[_url.length - 1] === "") return _url[_url.length - 2];
-        return _url[_url.length - 1];
+        let steamId;
+        if (_url[_url.length - 1] === "") steamId = _url[_url.length - 2];
+        else steamId = _url[_url.length - 1];
+
+        const response = await fetch(
+            `http://localhost:3030/api/steamId/${steamId}`,
+        );
+
+        const data = await response.json();
+        if (data !== 42) return data;
+
+        return false;
     }
 
-    async searchSteamIdProfile() {
-        const VANITY_URL = `http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${process.env.STEAM_API_KEY}&vanityurl=${this.STEAM_ID}`;
+    async getSteamIdOwnedGames() {}
+
+    get steamId() {
+        return this.STEAM_ID;
     }
 }
