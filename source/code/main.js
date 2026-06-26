@@ -8,8 +8,16 @@ import { Steam } from "./entities/steam.js";
 })();
 
 function catchInputChange(Steam) {
+    const WRAPPER = document.querySelector(".search-wrapper");
     const SEARCH_INPUT = document.querySelector(
         'input[name="search-steam-id"]',
+    );
+
+    SEARCH_INPUT.addEventListener("focus", () =>
+        WRAPPER.classList.add("focused-input"),
+    );
+    SEARCH_INPUT.addEventListener("focusout", () =>
+        WRAPPER.classList.remove("focused-input"),
     );
 
     SEARCH_INPUT.addEventListener("keydown", async () => {
