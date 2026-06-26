@@ -1,3 +1,100 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
+:root {
+    --background_0: #f0faf0;
+    --background_1: #edffec;
+    --background: #eef0f2ff;
+    --shade: #e2e4e6;
+    --black: #48435c;
+    --blue: #9792e3;
+    --charcoal: #545766;
+}
+
 * {
-    font-family: 'Iosevka';
+    font-family: "Inter";
+
+    margin: 0;
+    padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+small {
+    color: var(--black);
+}
+
+body {
+    background-color: var(--background);
+}
+
+.main-content {
+    max-width: 768px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    padding: 2rem;
+}
+
+#search-steam-id {
+    max-width: 380px;
+    border: none;
+    outline: none;
+}
+
+.search-steam-button {
+    border: none;
+    outline: none;
+
+    border-radius: 3rem;
+    padding: 0.8rem;
+    font-weight: bold;
+
+    color: var(--shade);
+    background-color: var(--black);
+}
+
+.search-steam-button:hover {
+    cursor: pointer;
+}
+
+.focused-input {
+    border: 3px solid var(--charcoal);
+}
+
+.search-wrapper,
+#search-steam-id {
+    background-color: var(--shade);
+}
+
+.search-wrapper {
+    max-width: 480px;
+    height: 30px;
+
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 0.8rem;
+    border-radius: 3rem;
+}
+
+.main-section {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: left;
+
+    max-width: 480px;
+    gap: 1rem;
+}
+
+.header-title {
+    font-size: 2.5rem;
 }
