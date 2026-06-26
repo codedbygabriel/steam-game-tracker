@@ -3,17 +3,31 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>SGT - Track Your Games!</title>
+        <title>Steam Progress Tracker</title>
         <link href="./source/styling/main.css" rel="stylesheet" />
     </head>
     <body>
-        <h1>on development, commited for backtracking ^^</h1>
-
-        <input
-            type="text"
-            name="search-steam-id"
-            placeholder="Your Steam URL/ID Here."
-        />
+        <main class="main-content">
+            <section class="main-section">
+                <header>
+                    <h1 class="header-title">Steam Progress Tracker</h1>
+                    <small>
+                        Give yourself a chance of finishing what you've bought.
+                    </small>
+                </header>
+                <div class="search-wrapper">
+                    <input
+                        id="search-steam-id"
+                        type="text"
+                        name="search-steam-id"
+                        placeholder="Your Steam URL/ID Here."
+                    />
+                    <button class="search-steam-button" type="button">
+                        Search
+                    </button>
+                </div>
+            </section>
+        </main>
     </body>
     <script type="module" src="./source/code/main.js"></script>
 </html>
