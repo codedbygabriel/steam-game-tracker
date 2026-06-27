@@ -51,19 +51,20 @@ const app = http.createServer(async (req, res) => {
         return;
     }
 
-    if (req.url.includes("api/steamId/")) {
-        // DOC: This route is used to search for a Steam profile ID by vanity endpoint, returns the profile (an id) or false.
-        const id = returnId(req.url);
-        const PROFILE_ID = await searchSteamIdProfile(id);
-
-        res.end(JSON.stringify(PROFILE_ID));
+    if (req.url.includes("api/urlToId/")) {
+        // This route should only be accessed by passing a URL to convert to ID;
+        const userId = await urlToId(req.url);
+        res.end(JSON.stringify(userId));
     }
 
-    if (req.url.includes("api/steamIdOwnedGames/")) {
-        const id = returnId(req.url);
-        const GAMES = await getSteamIdOwnedGames(id);
+    if (req.url.includes("api/idDetails/")) {
+        const data = await idDetails(req.url);
+        res.end(JSON.stringify(data));
+    }
 
-        res.end(JSON.stringify(GAMES));
+    if (req.url.includes("api/getIdGames/")) {
+        const games = await getIdGames(req.url);
+        res.end(JSON.stringify(games));
     }
 });
 
@@ -71,29 +72,53 @@ app.listen(process.env.port, () => {
     console.log(`Server listening on port ${process.env.port}`);
 });
 
-async function searchSteamIdProfile(steamId) {
-    const VANITY_URL = `http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${process.env.api_key}&vanityurl=${steamId}`;
-    const response = await fetch(VANITY_URL);
-    const data = await response.json();
+const urlToId = async (url) => {
+    const urlParts = url.split("/").filter(Boolean);
+    const username = urlParts[urlParts.length - 1];
 
-    console.warn(data.response.steamid);
-    console.warn(data.response.success);
+    const URL = `http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${process.env.api_key}&vanityurl=${username}`;
+    try {
+        const response = await fetch(URL);
+        const data = await response.json();
 
-    if (data.response.success === 42) return false;
-    return data.response.steamid;
-}
+        switch (data.response.success) {
+            case 1:
+                return data.response.steamid;
+                break;
+            case 42:
+            default:
+                return false;
+        }
+    } catch (e) {
+        console.error("LOG ERROR:", e);
+    }
+};
+const idDetails = async (url) => {
+    const idParts = url.split("/").filter(Boolean);
+    const steamId = idParts[idParts.length - 1];
+    const URL = `https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${process.env.api_key}&steamids=${steamId}`;
 
-async function getSteamIdOwnedGames(steamId) {
-    const GAMES_URL = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${process.env.api_key}&steamid=${steamId}&include_appinfo=true&format=json`;
-    const response = await fetch(GAMES_URL);
-    const data = await response.json();
+    try {
+        const response = await fetch(URL);
+        const data = await response.json();
 
-    return data;
-}
+        return data.response.players[0];
+    } catch (e) {
+        console.error(e);
+    }
+};
+const getIdGames = async (url) => {
+    const idParts = url.split("/").filter(Boolean);
+    const steamId = idParts[idParts.length - 1];
+    const URL = `https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${process.env.api_key}&steamid=${steamId}&include_appinfo=true`;
 
-const returnId = (url) => {
-    const steam_url = url.split("/");
-    const id = steam_url[steam_url.length - 1];
+    try {
+        const response = await fetch(URL);
+        const data = await response.json();
 
-    return id;
+        console.log(data);
+        return data.response.games;
+    } catch (e) {
+        console.error(e);
+    }
 };
