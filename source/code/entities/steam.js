@@ -39,7 +39,7 @@ export class Steam {
 
         console.log(this.data);
 
-        return true;
+        return { success: true, steamName: this.data.steamName };
     }
     async populateProfile() {
         const URL = `api/idDetails/${this.data.steamId}`;
