@@ -2,60 +2,66 @@
 
 export class Steam {
     R_STEAM_ID = /^7656119[0-9]{10}$/;
-    STEAM_ID = false;
-    GAMES = [];
+    data = {
+        steamId: null,
+        steamRealName: null,
+        steamName: null,
+        games: [],
+    };
 
     async validateSteamId(SEARCH_INPUT) {
-        let IS_URL = false;
-        let IS_SteamId = false;
+        let isURL = false;
+        let isSteamId = false;
+        const value = SEARCH_INPUT.value;
 
-        // DONE: Create a method to catch user ID via URL
-        if (SEARCH_INPUT.value.includes("steamcommunity.com")) IS_URL = true;
-        if (this.R_STEAM_ID.test(SEARCH_INPUT.value)) IS_SteamId = true;
+        if (value.includes("steamcommunity.com")) isURL = true;
+        if (this.R_STEAM_ID.test(value)) isSteamId = true;
 
-        if (!(IS_URL || IS_SteamId)) {
-            // TODO: Create a alert to inform the user that the input is not a valid Steam ID
-            console.error(`${SEARCH_INPUT.value} is not a valid Steam ID`);
-            return false;
+        if (!(isURL || isSteamId)) return false;
+
+        if (isURL) {
+            try {
+                console.warn(`Fetching steamId for URL: ${value}`);
+                const steamId = await fetch(`api/urlToId/${value}`);
+                const data = await steamId.json();
+
+                this.data.steamId = data;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        } else {
+            this.data.steamId = value;
         }
 
-        if (IS_URL || IS_SteamId)
-            console.warn(
-                `${SEARCH_INPUT.value} is about to be converted to a Steam ID / tested.`,
-            );
+        await this.populateProfile();
+        await this.populateGames();
 
-        this.STEAM_ID = IS_URL
-            ? await this.#URLToSteamId(SEARCH_INPUT.value)
-            : SEARCH_INPUT.value;
+        console.log(this.data);
 
-        if (this.STEAM_ID === false) return false;
         return true;
     }
+    async populateProfile() {
+        const URL = `api/idDetails/${this.data.steamId}`;
+        try {
+            const response = await fetch(URL);
+            const data = await response.json();
 
-    async #URLToSteamId(url) {
-        const _url = url.split("/");
-
-        // Sometimes, if the steam URl ends with "/" the algorithm may return a empty string.
-        let steamId;
-        if (_url[_url.length - 1] === "") steamId = _url[_url.length - 2];
-        else steamId = _url[_url.length - 1];
-
-        const response = await fetch(`/api/steamId/${steamId}`);
-
-        const data = await response.json();
-        if (data !== 42) return data;
-
-        return false;
+            this.data.steamRealName = data.realname || null;
+            this.data.steamName = data.personaname || null;
+        } catch (e) {
+            console.error(e);
+        }
     }
+    async populateGames() {
+        const URL = `api/getIdGames/${this.data.steamId}`;
+        try {
+            const response = await fetch(URL);
+            const data = await response.json();
 
-    async getSteamIdOwnedGames() {
-        const response = await fetch(`/api/steamIdOwnedGames/${this.STEAM_ID}`);
-
-        const data = await response.json();
-        console.log(data);
-    }
-
-    get steamId() {
-        return this.STEAM_ID;
+            this.data.games = data || [];
+        } catch (e) {
+            console.error(e);
+        }
     }
 }
