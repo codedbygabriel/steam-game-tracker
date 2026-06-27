@@ -28,21 +28,23 @@
                     </button>
                 </div>
                 <!-- TODO: History of searchs -->
-                <section></section>
+                <section class="search-history">
+                    <ul class="search-history-list"></ul>
+                </section>
             </article>
             <!-- Games / Content -->
             <section class="hidden games-panel">
-                <header>
+                <header class="games-panel-header">
                     <h2 class="games-panel-title"></h2>
                     <small>
                         May contain free games, outdated history. It's purely
                         based on Steam's Api.
                     </small>
-                    <nav>
-                        <button class="func-button" type="button">Hours</button>
-                        <button class="func-button" type="button">A-Z</button>
-                    </nav>
                 </header>
+                <nav class="games-panel-nav">
+                    <button class="func-button" type="button">Hours</button>
+                    <button class="func-button" type="button">A-Z</button>
+                </nav>
                 <div class="panel-items"></div>
             </section>
         </main>
