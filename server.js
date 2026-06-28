@@ -29,11 +29,7 @@ const app = http.createServer(async (req, res) => {
         return;
     }
 
-    if (
-        req.url === "/" ||
-        req.url.includes(".js") ||
-        req.url.includes(".css")
-    ) {
+    if (req.url === "/" || req.url.includes(".js") || req.url.includes(".css")) {
         const filePath = req.url === "/" ? "index.html" : req.url.substring(1);
 
         const _path = path.join(__dirname, filePath);
@@ -73,8 +69,11 @@ app.listen(process.env.port, () => {
 });
 
 const urlToId = async (url) => {
+    const regex_id = /^7656119[0-9]{10}$/;
     const urlParts = url.split("/").filter(Boolean);
     const username = urlParts[urlParts.length - 1];
+
+    if (regex_id.test(username)) return username;
 
     const URL = `http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${process.env.api_key}&vanityurl=${username}`;
     try {
