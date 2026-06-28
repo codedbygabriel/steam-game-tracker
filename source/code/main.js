@@ -75,6 +75,9 @@ const updateGamesPanel = (steam) => {
         gameWrapper.classList.add("game-wrapper");
         gameHeader.classList.add("game-header");
         gameTitle.classList.add("game-title");
+        gameTitle.addEventListener("click", () => {
+            assignGameStatus(game, steam, gameTitle);
+        });
 
         gameHeader.appendChild(gameImage);
         gameHeader.appendChild(gameTitle);
@@ -85,7 +88,24 @@ const updateGamesPanel = (steam) => {
         panelItems.appendChild(gameWrapper);
     });
 };
+const assignGameStatus = (game, steam, title) => {
+    const possibleStatus = ["in_progress", "abandoned", "completed", "unplayed", "unregistered"];
 
+    if (game?.status === undefined) {
+        game.status = possibleStatus.length - 1;
+        title.innerText = `${game.name} (${possibleStatus[game.status]})`;
+        return;
+    }
+
+    if (game.status >= possibleStatus.length || (game.status += 1) >= possibleStatus.length) {
+        game.status = 0;
+        title.innerText = `${game.name} (${possibleStatus[game.status]})`;
+        return;
+    }
+
+    game.status += 1;
+    title.innerText = `${game.name} (${possibleStatus[game.status]})`;
+};
 const updateSearchHistory = (steam) => {
     const searchHistoryItem = document.createElement("li");
 
