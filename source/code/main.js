@@ -11,11 +11,6 @@ const panelItems = document.querySelector(".panel-items");
 const gamesPanelTitle = document.querySelector(".games-panel-title");
 const searchHistory = document.querySelector(".search-history-list");
 
-(() => {
-    const profiles = [];
-    init(searchInput, wrapper, button, profiles);
-})();
-
 function init(searchInput, wrapper, button, profiles) {
     searchInput.addEventListener("focus", () => wrapper.classList.add("focused-input"));
     searchInput.addEventListener("focusout", () => wrapper.classList.remove("focused-input"));
@@ -27,8 +22,8 @@ function init(searchInput, wrapper, button, profiles) {
 
         await inputEventHandler(new Steam(), searchInput, profiles);
     });
+    if (profiles.length >= 1) startGamesPanel(profiles[0]);
 }
-
 const inputEventHandler = async (steam, searchInput, profiles) => {
     const response = await steam.validateSteamId(searchInput);
 
@@ -38,10 +33,10 @@ const inputEventHandler = async (steam, searchInput, profiles) => {
     if (isDuplicate) return false;
 
     profiles.push(steam);
+    saveProfilesHistory(profiles);
     updateSearchHistory(steam);
     startGamesPanel(steam);
 };
-
 async function startGamesPanel(steam) {
     mainContentWrapper.style.flexFlow = "row nowrap";
     mainContentWrapper.style.alignItems = "start";
@@ -50,7 +45,6 @@ async function startGamesPanel(steam) {
 
     gamesPanel.classList.remove("hidden");
 }
-
 const updateGamesPanel = (steam) => {
     if (panelItems.hasChildNodes()) panelItems.innerHTML = "";
 
@@ -118,3 +112,25 @@ const updateSearchHistory = (steam) => {
 
     searchHistory.appendChild(searchHistoryItem);
 };
+const loadProfilesHistory = () => {
+    const data = localStorage.getItem("_profiles");
+    let parse;
+
+    if (data) {
+        parse = JSON.parse(data);
+        parse.forEach((profile) => {
+            updateSearchHistory(profile);
+        });
+    } else {
+        parse = [];
+    }
+    return parse;
+};
+const saveProfilesHistory = (profiles) => {
+    localStorage.setItem("_profiles", JSON.stringify(profiles));
+};
+
+(() => {
+    const profiles = loadProfilesHistory();
+    init(searchInput, wrapper, button, profiles);
+})();
