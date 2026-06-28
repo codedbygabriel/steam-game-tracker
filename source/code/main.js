@@ -10,6 +10,7 @@ const mainContentWrapper = document.querySelector(".main-content");
 const panelItems = document.querySelector(".panel-items");
 const gamesPanelTitle = document.querySelector(".games-panel-title");
 const searchHistory = document.querySelector(".search-history-list");
+const possibleStatus = ["in_progress", "abandoned", "completed", "unplayed", "unregistered"];
 
 function init(searchInput, wrapper, button, profiles) {
     searchInput.addEventListener("focus", () => wrapper.classList.add("focused-input"));
@@ -21,6 +22,9 @@ function init(searchInput, wrapper, button, profiles) {
         if (event.key !== "Enter") return false;
 
         await inputEventHandler(new Steam(), searchInput, profiles);
+    });
+    window.addEventListener("beforeunload", () => {
+        saveProfilesHistory(profiles);
     });
     if (profiles.length >= 1) startGamesPanel(profiles[0]);
 }
@@ -60,7 +64,7 @@ const updateGamesPanel = (steam) => {
 
         const gamePlayTime = document.createElement("small");
 
-        gameTitle.innerText = game.name;
+        gameTitle.innerText = game?.status !== undefined ? `${game.name} (${possibleStatus[game.status]})` : game.name;
         const smallGameName = game.name.length >= 20 ? game.name.slice(0, 20) + "..." : game.name;
 
         gamePlayTime.innerText = `You have played ${smallGameName} for ${(game.playtime_forever / 60).toFixed(2)} hours.`;
@@ -83,8 +87,6 @@ const updateGamesPanel = (steam) => {
     });
 };
 const assignGameStatus = (game, steam, title) => {
-    const possibleStatus = ["in_progress", "abandoned", "completed", "unplayed", "unregistered"];
-
     if (game?.status === undefined) {
         game.status = possibleStatus.length - 1;
         title.innerText = `${game.name} (${possibleStatus[game.status]})`;
@@ -105,7 +107,9 @@ const updateSearchHistory = (steam) => {
 
     searchHistory.classList.add("search-history");
 
-    searchHistoryItem.innerText = `${steam.data.steamName} (${steam.data.steamRealName})`;
+    searchHistoryItem.innerText = steam.data.steamRealName
+        ? `${steam.data.steamName} (${steam.data.steamRealName})`
+        : steam.data.steamName;
     searchHistoryItem.addEventListener("click", () => {
         updateGamesPanel(steam);
     });
