@@ -126,13 +126,16 @@ body {
     display: flex;
     flex-flow: row nowrap;
 
-    justify-content: space-between;
+    justify-content: left;
     align-items: center;
 
     margin-top: 0.5rem;
-    gap: 0.1rem;
+    gap: 1rem;
     max-width: 480px;
     max-height: 32px;
+
+    border-bottom: 1px solid var(--charcoal);
+    padding-bottom: 0.5rem;
 }
 
 .game-title {
@@ -154,4 +157,11 @@ body {
 .func-button,
 .search-history li {
     cursor: pointer;
+}
+
+.game-wrapper {
+    padding: 1rem;
+    background-color: var(--shade);
+    border-radius: 1rem;
+    margin-bottom: 1.5rem;
 }
