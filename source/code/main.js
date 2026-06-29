@@ -11,6 +11,8 @@ const panelItems = document.querySelector(".panel-items");
 const gamesPanelTitle = document.querySelector(".games-panel-title");
 const searchHistory = document.querySelector(".search-history-list");
 const possibleStatus = ["in_progress", "abandoned", "completed", "unplayed", "unregistered"];
+const [hoursFilterButton, azFilterButton, exportButton] = document.querySelectorAll(".func-button");
+let [inverterHoursFlag, inverterAZFlag] = [false, false];
 
 function init(searchInput, wrapper, button, profiles) {
     searchInput.addEventListener("focus", () => wrapper.classList.add("focused-input"));
@@ -27,6 +29,9 @@ function init(searchInput, wrapper, button, profiles) {
         saveProfilesHistory(profiles);
     });
     if (profiles.length >= 1) startGamesPanel(profiles[0]);
+    hoursFilterButton.addEventListener("click", () => filterByHours(profiles));
+    azFilterButton.addEventListener("click", () => filterByAZ(profiles));
+    exportButton.addEventListener("click", () => exportCurrentUser(profiles));
 }
 const inputEventHandler = async (steam, searchInput, profiles) => {
     const response = await steam.validateSteamId(searchInput);
@@ -52,7 +57,7 @@ async function startGamesPanel(steam) {
 const updateGamesPanel = (steam) => {
     if (panelItems.hasChildNodes()) panelItems.innerHTML = "";
 
-    gamesPanelTitle.innerText = `Observing Games From (${steam.data.steamRealName || steam.data.steamName})`;
+    gamesPanelTitle.innerText = `Observing Games From "${steam.data.steamName}"`;
 
     steam.data.games.forEach((game) => {
         const gameWrapper = document.createElement("section");
@@ -132,6 +137,47 @@ const loadProfilesHistory = () => {
 };
 const saveProfilesHistory = (profiles) => {
     localStorage.setItem("_profiles", JSON.stringify(profiles));
+};
+const filterByHours = (profiles) => {
+    const currentUser = grabSteamObjectFromTitle(profiles);
+    const _games = currentUser.data.games.sort((g0, g1) => {
+        let returnValue;
+        if (!inverterHoursFlag) {
+            if (g0.playtime_forever > g1.playtime_forever) returnValue = 1;
+
+            if (g0.playtime_forever < g1.playtime_forever) returnValue = -1;
+        } else {
+            if (g0.playtime_forever < g1.playtime_forever) returnValue = 1;
+
+            if (g0.playtime_forever > g1.playtime_forever) returnValue = -1;
+        }
+
+        returnValue = returnValue === 1 || returnValue === -1 ? returnValue : 0;
+        return returnValue;
+    });
+    inverterHoursFlag = !inverterHoursFlag;
+    currentUser.data.games = _games;
+    updateGamesPanel(currentUser);
+};
+const filterByAZ = (profiles) => {
+    const currentUser = grabSteamObjectFromTitle(profiles);
+    const _games = currentUser.data.games.sort((g0, g1) => {
+        let returnValue;
+        if (inverterAZFlag) returnValue = g0.name.localeCompare(g1.name);
+        else returnValue = g1.name.localeCompare(g0.name);
+        return returnValue;
+    });
+    inverterAZFlag = !inverterAZFlag;
+    currentUser.data.games = _games;
+    updateGamesPanel(currentUser);
+};
+const exportCurrentUser = (profiles) => {
+    const profile = grabSteamObjectFromTitle(profiles);
+};
+const grabSteamObjectFromTitle = (profiles) => {
+    let target = gamesPanelTitle.innerText.split('"');
+    target = target[target.length - 2];
+    return profiles.find((profile) => profile.data.steamName === target);
 };
 
 (() => {
