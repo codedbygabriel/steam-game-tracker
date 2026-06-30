@@ -12,6 +12,7 @@ const gamesPanelTitle = document.querySelector(".games-panel-title");
 const searchHistory = document.querySelector(".search-history-list");
 const possibleStatus = ["in_progress", "abandoned", "completed", "unplayed", "unregistered"];
 const [hoursFilterButton, azFilterButton, exportButton] = document.querySelectorAll(".func-button");
+const isMobile = window.matchMedia("(max-width: 768px)");
 let [inverterHoursFlag, inverterAZFlag] = [false, false];
 
 function init(searchInput, wrapper, button, profiles) {
@@ -32,6 +33,8 @@ function init(searchInput, wrapper, button, profiles) {
     hoursFilterButton.addEventListener("click", () => filterByHours(profiles));
     azFilterButton.addEventListener("click", () => filterByAZ(profiles));
     exportButton.addEventListener("click", () => exportCurrentUser(profiles));
+    isMobile.addEventListener("change", responsivityHandler);
+    responsivityHandler(isMobile);
 }
 const inputEventHandler = async (steam, searchInput, profiles) => {
     const response = await steam.validateSteamId(searchInput);
@@ -47,9 +50,8 @@ const inputEventHandler = async (steam, searchInput, profiles) => {
     startGamesPanel(steam);
 };
 async function startGamesPanel(steam) {
-    mainContentWrapper.style.flexFlow = "row nowrap";
-    mainContentWrapper.style.alignItems = "start";
-
+    mainContentWrapper.classList.remove("main-content-base");
+    mainContentWrapper.classList.add("not-hidden-content");
     updateGamesPanel(steam);
 
     gamesPanel.classList.remove("hidden");
@@ -185,7 +187,15 @@ const grabSteamObjectFromTitle = (profiles) => {
     target = target[target.length - 2];
     return profiles.find((profile) => profile.data.steamName === target);
 };
-
+function responsivityHandler(e) {
+    if (e.matches) {
+        mainContentWrapper.classList.add("main-content-base");
+        mainContentWrapper.classList.remove("not-hidden-content");
+    } else {
+        mainContentWrapper.classList.remove("main-content-base");
+        mainContentWrapper.classList.add("not-hidden-content");
+    }
+}
 (() => {
     const profiles = loadProfilesHistory();
     init(searchInput, wrapper, button, profiles);
