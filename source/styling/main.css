@@ -31,6 +31,12 @@ small {
 body {
     background-color: var(--background);
 }
+/* Responsivity */
+/*@media (max-width: 768px) {
+    .main-content {
+        flex-flow: column wrap;
+    }
+}*/
 
 /* Utility Classes / Id / Functions */
 .search-steam-button:hover {
@@ -44,16 +50,22 @@ body {
 .hidden {
     display: none;
 }
+.not-hidden-content {
+    flex-flow: row nowrap;
+    align-items: start;
+}
 
 /* General Styling Classes / ID */
+.main-content-base {
+    flex-flow: column nowrap;
+    align-items: center;
+}
 .main-content {
     max-width: 1280px;
     margin: 0 auto;
 
     /* TODO: Change to Row When API Search is Validated */
     display: flex;
-    flex-flow: column nowrap;
-    align-items: center;
     justify-content: space-evenly;
 
     gap: 1rem;
