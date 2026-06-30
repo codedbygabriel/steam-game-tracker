@@ -36,6 +36,8 @@ function init(searchInput, wrapper, button, profiles) {
     exportButton.addEventListener("click", () => exportCurrentUser(profiles));
     goBackButton.addEventListener("click", returnToTop);
     isMobile.addEventListener("change", responsivityHandler);
+
+    observer.observe(searchHistory);
     responsivityHandler(isMobile);
 }
 const inputEventHandler = async (steam, searchInput, profiles) => {
@@ -196,20 +198,33 @@ function responsivityHandler(e) {
 
         gamesPanelTitle.classList.add("games-and-nav-responsivity");
         gamesPanelNav.classList.add("games-and-nav-responsivity");
+
+        goBackButton.classList.remove("hidden");
     } else {
         mainContentWrapper.classList.remove("main-content-base");
         mainContentWrapper.classList.add("not-hidden-content");
 
         gamesPanelTitle.classList.remove("games-and-nav-responsivity");
         gamesPanelNav.classList.remove("games-and-nav-responsivity");
+
+        goBackButton.classList.add("hidden");
     }
 }
-
 const returnToTop = () => {
     gamesPanelTitle.scrollIntoView({
         behavior: "smooth",
     });
 };
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+            goBackButton.classList.add("hidden");
+        } else {
+            goBackButton.classList.remove("hidden");
+        }
+    });
+});
+
 (() => {
     const profiles = loadProfilesHistory();
     init(searchInput, wrapper, button, profiles);
