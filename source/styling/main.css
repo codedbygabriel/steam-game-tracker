@@ -127,6 +127,10 @@ body {
     font-size: 2rem;
 }
 
+.games-and-nav-responsivity {
+    text-align: center;
+}
+
 .games-panel-header {
     margin: 0rem 0rem 1rem 0rem;
 }
