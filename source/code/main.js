@@ -9,6 +9,7 @@ const gamesPanel = document.querySelector(".games-panel");
 const mainContentWrapper = document.querySelector(".main-content");
 const panelItems = document.querySelector(".panel-items");
 const gamesPanelTitle = document.querySelector(".games-panel-title");
+const gamesPanelNav = document.querySelector(".games-panel-nav");
 const searchHistory = document.querySelector(".search-history-list");
 const possibleStatus = ["in_progress", "abandoned", "completed", "unplayed", "unregistered"];
 const [hoursFilterButton, azFilterButton, exportButton] = document.querySelectorAll(".func-button");
@@ -191,9 +192,15 @@ function responsivityHandler(e) {
     if (e.matches) {
         mainContentWrapper.classList.add("main-content-base");
         mainContentWrapper.classList.remove("not-hidden-content");
+
+        gamesPanelTitle.classList.add("games-and-nav-responsivity");
+        gamesPanelNav.classList.add("games-and-nav-responsivity");
     } else {
         mainContentWrapper.classList.remove("main-content-base");
         mainContentWrapper.classList.add("not-hidden-content");
+
+        gamesPanelTitle.classList.remove("games-and-nav-responsivity");
+        gamesPanelNav.classList.remove("games-and-nav-responsivity");
     }
 }
 (() => {
