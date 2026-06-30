@@ -12,7 +12,7 @@ const gamesPanelTitle = document.querySelector(".games-panel-title");
 const gamesPanelNav = document.querySelector(".games-panel-nav");
 const searchHistory = document.querySelector(".search-history-list");
 const possibleStatus = ["in_progress", "abandoned", "completed", "unplayed", "unregistered"];
-const [hoursFilterButton, azFilterButton, exportButton] = document.querySelectorAll(".func-button");
+const [goBackButton, hoursFilterButton, azFilterButton, exportButton] = document.querySelectorAll(".func-button");
 const isMobile = window.matchMedia("(max-width: 768px)");
 let [inverterHoursFlag, inverterAZFlag] = [false, false];
 
@@ -34,6 +34,7 @@ function init(searchInput, wrapper, button, profiles) {
     hoursFilterButton.addEventListener("click", () => filterByHours(profiles));
     azFilterButton.addEventListener("click", () => filterByAZ(profiles));
     exportButton.addEventListener("click", () => exportCurrentUser(profiles));
+    goBackButton.addEventListener("click", returnToTop);
     isMobile.addEventListener("change", responsivityHandler);
     responsivityHandler(isMobile);
 }
@@ -203,6 +204,12 @@ function responsivityHandler(e) {
         gamesPanelNav.classList.remove("games-and-nav-responsivity");
     }
 }
+
+const returnToTop = () => {
+    gamesPanelTitle.scrollIntoView({
+        behavior: "smooth",
+    });
+};
 (() => {
     const profiles = loadProfilesHistory();
     init(searchInput, wrapper, button, profiles);
