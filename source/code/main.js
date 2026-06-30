@@ -173,6 +173,12 @@ const filterByAZ = (profiles) => {
 };
 const exportCurrentUser = (profiles) => {
     const profile = grabSteamObjectFromTitle(profiles);
+
+    const worksheet = window.XLSX.utils.json_to_sheet(profile.data.games);
+    const workbook = window.XLSX.utils.book_new();
+
+    window.XLSX.utils.book_append_sheet(workbook, worksheet, "Steam Game Tracker");
+    window.XLSX.writeFile(workbook, `${profile.data.steamName} - Export.xlsx`);
 };
 const grabSteamObjectFromTitle = (profiles) => {
     let target = gamesPanelTitle.innerText.split('"');
