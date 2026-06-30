@@ -30,6 +30,7 @@ small {
 
 body {
     background-color: var(--background);
+    position: relative;
 }
 /* Responsivity */
 /*@media (max-width: 768px) {
@@ -180,4 +181,11 @@ body {
     background-color: var(--shade);
     border-radius: 1rem;
     margin-bottom: 1.5rem;
+}
+
+.go-back-button {
+    position: fixed;
+    z-index: 100;
+    left: 50px;
+    bottom: 50px;
 }
