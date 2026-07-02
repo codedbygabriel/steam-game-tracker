@@ -49,7 +49,7 @@ const app = http.createServer(async (req, res) => {
 
     if (req.url.includes("api/urlToId/")) {
         // This route should only be accessed by passing a URL to convert to ID;
-        const userId = await urlToId(req.url);
+        const userId = await urlToId(req.url, req);
         res.end(JSON.stringify(userId));
     }
 
@@ -68,12 +68,36 @@ app.listen(process.env.port, () => {
     console.log(`Server listening on port ${process.env.port}`);
 });
 
-const urlToId = async (url) => {
-    const regex_id = /^7656119[0-9]{10}$/;
-    const urlParts = url.split("/").filter(Boolean);
-    const username = urlParts[urlParts.length - 1];
+const urlToId = async (url, req) => {
+    let username;
+    
+    const parsedBody = await new Promise((resolve, reject) => {
+        let body = ''
 
-    if (regex_id.test(username)) return username;
+        req.on(`data`, (c) => {
+            body += c.toString();
+        })
+
+        req.on('end', _ => {
+            try {
+                resolve(JSON.parse(body));
+            } catch (e) {
+                reject(e);
+            }
+        })
+
+        req.on('error', _ => reject(_));
+    })
+
+    if(!parsedBody.isWrongUsage) {
+        const regex_id = /^7656119[0-9]{10}$/;
+        const urlParts = url.split("/").filter(Boolean);
+        username = urlParts[urlParts.length - 1];
+
+        if (regex_id.test(username)) return username;
+    } else {
+        username = parsedBody.id;
+    }
 
     const URL = `http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=${process.env.api_key}&vanityurl=${username}`;
     try {
@@ -83,7 +107,6 @@ const urlToId = async (url) => {
         switch (data.response.success) {
             case 1:
                 return data.response.steamid;
-                break;
             case 42:
             default:
                 return false;
